@@ -43,12 +43,15 @@ class CspClient:
         self.gap = None
         self.green_light = green_light.lower()
         self.cost_basis_per_share = cost_basis_per_share
+        self.dividend = None
 
     def get_sym(self):
         age = od.check_data(self.RIC)
-        if age > 99:
+        if age > 2:
             od.get_options([self.RIC])
         self.sym = pd.read_pickle('assets/{}_sym.pkl'.format(self.RIC)).iloc[0]['ticker']  # import the symbol
+        self.dividend = pd.read_pickle('assets/{}_cached_und.pkl'.format(self.sym))['YIELD'].iloc[0]
+        self.last = pd.read_pickle('assets/{}_cached_und.pkl'.format(self.sym))['CF_LAST'].iloc[0]
 
     def create_sef(self, shares_to_hedge: int):
         if self.sef_approved == 'n':
@@ -56,7 +59,7 @@ class CspClient:
             return
         else:
             age = od.check_data(self.RIC)
-            if age > 99:
+            if age > 2:
                 chain = od.get_options([self.RIC])
             else:
                 chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))
@@ -79,7 +82,7 @@ class CspClient:
             return
         else:
             age = od.check_data(self.RIC)
-            if age > 99:
+            if age > 2:
                 chain = od.get_options([self.RIC])
             else:
                 chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))
@@ -103,7 +106,7 @@ class CspClient:
             return
         else:
             age = od.check_data(self.RIC)
-            if age > 99:
+            if age > 2:
                 chain = od.get_options([self.RIC])
             else:
                 chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))
@@ -119,21 +122,4 @@ class CspClient:
             gap_trade.calc_trade()
             self.gap = gap_trade
 
-
-j = CspClient(client_name="ABC", RIC='NVDA.O', shares=39600, cost_basis_per_share=25.0)
-j.get_sym()
-j.create_sef(13200)
-j.sef.SEF_payoff_plots()
-j.create_cov_call(13200)
-j.cov_call.create_cc_plots()
-j.create_gap(13200)
-j.gap.create_gap_plots()
-j.gap.data_tab()
-print(j.cov_call.S_CALL)
-print(j.gap.net_opt_cost)
-print(j.gap.adj_time_left)
-print(j.gap.trade_delta)
-print(j.gap.data_table)
-print(j.sef.collar)
-print(j.sef.synthetic)
 

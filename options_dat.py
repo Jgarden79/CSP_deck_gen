@@ -38,6 +38,7 @@ def get_options(RICLST = list):
         name_d.to_pickle('assets/{}_name.pkl'.format(RIC)) # save name to pkl
         sym = x.iloc[0]['ticker'] # save tikcer as sym
         und = ek.get_data(RIC, fields = ['CF_LAST', 'YIELD'])[0] ###Gets Underlying Price###
+        und = und.fillna(0)
         und.to_pickle('assets/{}_cached_und.pkl'.format(sym)) # save unerlying data to pkl
         sym_2 = RIC.split('.')[0] # save ric
         sym_2 = sym_2.upper() # make sure its in upper cas

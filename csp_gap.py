@@ -54,6 +54,8 @@ class CspGap:
         self.sym = pd.read_pickle('assets/{}_sym.pkl'.format(self.RIC)).iloc[0]['ticker']  # import the symbol
         self.und = pd.read_pickle('assets/{}_cached_und.pkl'.format(self.sym))  ##Gets Underlying Price###
         self.last = self.und.iloc[0]['CF_LAST']  # get most recent price
+        self.contracts = self.shares / 100
+        self.port_val = self.shares * self.last
 
 
 
@@ -247,10 +249,6 @@ class CspGap:
 
     def data_tab(self):
         '''Creates strategy data table for use in presentations'''
-        self.shares = float(self.shares)
-        self.contracts = self.shares / 100
-        self.port_val = self.shares * self.last
-        self.mgt_fee = self.mgt_fee_pct * self.port_val
         # Functions to calculate options payoffs at EXPIRY
         def call_payoff(stock_range,strike,premium):
             return np.where(stock_range>strike,stock_range-strike,0)-premium
@@ -273,7 +271,7 @@ class CspGap:
         # Calculate Strategy Payoff
         stock_pl_5=(percent_range-self.last)*self.shares
         strat_pl_5=payoff_long_put + payoff_short_put + payoff_short_call + stock_pl_5
-        strat_pl_5_net=strat_pl_5 - self.mgt_fee
+        strat_pl_5_net=strat_pl_5 - (self.fee * (self.adj_time_left)/365 * self.port_val)
         ret=pct_range-1
         ret_idx = [f'{x:.0%}' for x in ret ]
         df=pd.DataFrame({'return':ret_idx,f'{self.sym} with Hedge':strat_pl_5_net/self.port_val, f'{self.sym}':stock_pl_5/self.port_val})
@@ -291,7 +289,7 @@ class CspGap:
         # Customizing header color
         for (i, j), cell in table.get_celld().items():
             if i == 0:
-                cell.set_facecolor('#add8e6')  # Light blue color
+                cell.set_facecolor('#639DD9')  # Light blue color
             cell.set_edgecolor('black')  # Set gridline color
             cell.set_linewidth(1)  # Set gridline width
             cell.set_text_props(ha='center', va='center', fontsize=14)  # Center text and set font size
@@ -350,6 +348,7 @@ class CspGap:
 
     def create_gap_plots(self):
         self._payoff_plot()
+        self.data_tab()
         self._historical_chart()
 
 

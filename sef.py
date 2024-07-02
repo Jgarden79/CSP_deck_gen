@@ -51,7 +51,7 @@ class Sef:
 
     def _load_asset_data(self):
         age = od.check_data(self.RIC)
-        if age >=88: # change back to 2 after dev
+        if age >=2: # change back to 2 after dev
             od.get_options([f'{self.RIC}'])
         self.sym = pd.read_pickle('assets/{}_sym.pkl'.format(self.RIC)).iloc[0]['ticker']  # import the symbol
         chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))  # read in the options chaing to pandas
@@ -68,12 +68,12 @@ class Sef:
         if self.xsp == 'n':
             mkt = 'SPY'
             age = od.check_data(mkt)
-            if age >= 88:
+            if age >= 2:
                 od.get_options(['SPY'])
         else:
             mkt = 'xsp'
             age = od.check_data('xsp')
-            if age >= 88:
+            if age >= 2:
                 od.get_xsp_options()
         self.mkt_sym = mkt# import the symbol
         chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.mkt_sym))  # read in the options chaing to pandas
@@ -100,6 +100,7 @@ class Sef:
         collar = collar.drop(['DIF'], axis=1)
         collar['Trade'] = ['BPO', 'SCO']
         self.collar = collar
+        self.collar_cost = (long_put['MID'] - short_call['MID']) * (self.shares//100) * 100
 
     def _gen_synthetic(self):
         # SPY OTM Put
@@ -112,7 +113,9 @@ class Sef:
                 calls['MID'].sub(SPUT['MID']).abs().idxmin()] # SPY long call
         synthetic = pd.concat([SPUT.to_frame().T, LCALL.to_frame().T], axis=0)
         synthetic['Trade'] = ['SPO', 'BCO']
+        self.spy_contracts = math.floor((self.port_val / self.last_mkt) / 100)
         self.synthetic = synthetic
+        self.synthetic_cost = (LCALL['MID'] - SPUT['MID']) * self.spy_contracts * 100
 
     def generate_sef(self):
         self._gen_collar()
@@ -131,8 +134,7 @@ class Sef:
 
         '''Generates strategy payoff diagram at expiration for presentation decks'''
 
-        self.spy_contracts = math.floor((self.port_val / self.last_mkt) / 100)
-        rng = 0.4
+        rng = 0.5
         date = dt.datetime.strptime(self.expiration, '%Y-%m-%d').date()  # convert date to datetime
         time_left = date - today  # days left
         adj_time_left = time_left / dt.timedelta(days=1)  # convert to flt
@@ -291,6 +293,9 @@ class Sef:
         # Show the plot
         plt.tight_layout()
         plt.savefig(img_path / 'heatmap_{}'.format(self.sym))
+
+    def create_sef_plots(self):
+        self.SEF_payoff_plots()
 
 
 

@@ -732,11 +732,6 @@ class GapTrade():
 
     def data_table(self):
         '''Creates strategy data table for use in presentations'''
-        self.shares = input("Enter number of shares held:")
-        self.shares = float(self.shares)
-        self.contracts = self.shares / 100
-        self.port_val = self.shares * self.last
-        self.mgt_fee = self.mgt_fee_pct * self.port_val
         # Functions to calculate options payoffs at EXPIRY
         def call_payoff(stock_range,strike,premium):
             return np.where(stock_range>strike,stock_range-strike,0)-premium

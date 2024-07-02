@@ -32,6 +32,8 @@ pd.options.display.float_format = '{:.4f}'.format
 
 class CoverdCalls:
     def __init__(self, RIC:str, expiration:str, shares:int,cost_basis_per_share:float,fee=0.0125):
+        self.premium_percent = None
+        self.premium = None
         self.share_value = None
         self.contracts = None
         self.RIC = RIC
@@ -43,7 +45,7 @@ class CoverdCalls:
 
     def _load_asset_data(self):
         age = od.check_data(self.RIC)
-        if age >=88: # change back to 2 after dev
+        if age >=2: # change back to 2 after dev
             od.get_options([f'{self.RIC}'])
         self.sym = pd.read_pickle('assets/{}_sym.pkl'.format(self.RIC)).iloc[0]['ticker']  # import the symbol
         chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))  # read in the options chaing to pandas
@@ -57,14 +59,14 @@ class CoverdCalls:
 
     def _identify_call(self, hi_vol = 'n'):
         age = od.check_data(self.RIC)
-        if age >=88:
+        if age >=2:
             od.get_options([f'{self.RIC}'])
         call_options = self.sorted_trade_chain[self.sorted_trade_chain['PUTCALLIND'] == 'CALL']
         call_options = call_options[call_options['EXPIR_DATE'] == self.expiration]
         if hi_vol == 'n':
-            call_options = call_options[call_options['DELTA'] <=0.3]
+            call_options = call_options[call_options['DELTA'] <=0.2]
         else:
-            call_options = call_options[call_options['DELTA'] <= 0.4]
+            call_options = call_options[call_options['DELTA'] <= 0.3]
         self.S_CALL = call_options.iloc[0]
 
     def generate_covered_call(self, hi_vol = 'n'):
@@ -72,6 +74,8 @@ class CoverdCalls:
         self._identify_call(hi_vol=hi_vol)
         self.contracts = self.shares//100
         self.share_value = self.shares * self.last
+        self.premium = self.contracts * self.S_CALL['MID'] * 100
+        self.premium_percent = self.S_CALL['MID'] / self.S_CALL['STRIKE_PRC']
 
     def _cov_call_plots(self):
         def call_payoff(stock_range,strike,premium):
@@ -80,8 +84,9 @@ class CoverdCalls:
         date = dt.datetime.strptime(self.expiration, '%Y-%m-%d').date()  # convert date to datetime
         time_left = date - today  # days left
         adj_time_left = time_left / dt.timedelta(days=1)  # convert to flt
+        self.adj_time_left = adj_time_left
         dte = adj_time_left
-        rng = 0.4
+        rng = 0.5
         # Define stock price range at expiration
         stock_range=np.arange((1 - rng) * self.last, (1 + rng) * self.last, 1)
         self.cc_mgt_fee = self.fee * (dte / 365) * self.shares
@@ -124,7 +129,7 @@ class CoverdCalls:
         # Customizing header color
         for (i, j), cell in table.get_celld().items():
             if i == 0:
-                cell.set_facecolor('#add8e6')  # Light blue color
+                cell.set_facecolor('#639DD9')  # Light blue color
             cell.set_edgecolor('black')  # Set gridline color
             cell.set_linewidth(1)  # Set gridline width
             cell.set_text_props(ha='center', va='center', fontsize=14)  # Center text and set font size
@@ -169,7 +174,7 @@ class CoverdCalls:
         # plt.savefig('images/{}_covd_call_payoff'.format('BRK-B'))
 
     def _strat_exit(self):
-        rng = 0.4
+        rng = 0.5
         st_rate = 0.37
         lt_rate = 0.238
         cost_basis = self.cost_basis_per_share
@@ -202,7 +207,7 @@ class CoverdCalls:
         plt.yticks(fontsize=14)
         plt.gca().yaxis.set_major_formatter('{x:,.0%}')
         plt.xlabel('Stock Price at Expiration', fontsize=16, fontweight='bold')
-        plt.xlim(options_df['stock'].min(), options_df['stock'].max())
+        plt.xlim(options_df['stock'].min()*1.1, options_df['stock'].max())
         plt.xticks(fontsize=14)
         plt.gca().xaxis.set_major_formatter('${x:,.0f}')
 
@@ -219,7 +224,7 @@ class CoverdCalls:
                      rotation=90,
                      horizontalalignment='right', verticalalignment='center')
 
-        x1 = np.arange(options_df['stock'].min(), self.S_CALL['STRIKE_PRC'] + self.S_CALL['MID'],
+        x1 = np.arange(options_df['stock'].min()*1.1, self.S_CALL['STRIKE_PRC'] + self.S_CALL['MID'],
                        0.01)  # Below strike
         plt.fill_between(x1, y1=0, y2=options_df['pct_shares'].max() + 0.1, color='green', alpha=0.05)
 
