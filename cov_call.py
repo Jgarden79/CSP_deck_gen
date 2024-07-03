@@ -63,7 +63,7 @@ class CoverdCalls:
             od.get_options([f'{self.RIC}'])
         call_options = self.sorted_trade_chain[self.sorted_trade_chain['PUTCALLIND'] == 'CALL']
         call_options = call_options[call_options['EXPIR_DATE'] == self.expiration]
-        if hi_vol == 'n':
+        if hi_vol == 'y':
             call_options = call_options[call_options['DELTA'] <=0.2]
         else:
             call_options = call_options[call_options['DELTA'] <= 0.3]
@@ -308,12 +308,4 @@ class CoverdCalls:
         self._cov_call_plots()
         self._strat_exit()
         self._historical_chart()
-
-# h = CoverdCalls(RIC='AAPL.OQ', expiration='2024-09-20', shares=1, fee=0.0125, cost_basis_per_share=55.00)
-# h._load_asset_data()
-# h._identify_call(hi_vol = 'n')
-# h.generate_covered_call()
-# h.cov_call_plots()
-# h.strat_exit()
-# h.historical_chart()
 

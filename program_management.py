@@ -2,6 +2,9 @@ import csp_2 as csp
 import options_dat as od
 import deck as deck
 import pandas as pd
+import os
+import datetime as dt
+import shutil
 
 reqs = 'upload_template.csv'
 
@@ -27,3 +30,11 @@ def generate_decks(requests_path:str):
         else:
             a.create_csp_report()
         return
+
+def create_master_upload():
+    files = [pd.read_csv(f'trading_files/{i}') for i in os.listdir('trading_files')]
+    master_upload = pd.concat(files, ignore_index=True)
+    master_upload = master_upload.drop_duplicates()
+    [shutil.move(f'trading_files/{i}', 'archive/trading_files') for i in os.listdir('trading_files')]
+    date = dt.date.today().strftime('%Y%m%d')
+    master_upload.to_csv(f'trading_files/master_upload_{date}.csv', index=False)

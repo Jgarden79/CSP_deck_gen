@@ -29,7 +29,7 @@ pd.options.display.float_format = '{:.4f}'.format
 
 class CspClient:
     def __init__(self, client_name: str, RIC: str, shares: float, sef: str = 'y', cov_call: str = 'y', gap: str = 'y',
-                 green_light: str = 'n', cost_basis_per_share: float = 0.0):
+                 green_light: str = 'n', cost_basis_per_share: float = 0.0, exclude_div = 'y'):
         self.last = None
         self.sym = None
         self.client_name = client_name
@@ -44,6 +44,7 @@ class CspClient:
         self.green_light = green_light.lower()
         self.cost_basis_per_share = cost_basis_per_share
         self.dividend = None
+        self.exclude = exclude_div.lower()
 
     def get_sym(self):
         age = od.check_data(self.RIC)
@@ -118,7 +119,7 @@ class CspClient:
             exp_date = pd.to_datetime(dt.datetime.now().date() + dt.timedelta(days=395))
             gap_date = dates_series[np.abs(dates_series - exp_date).argmin()].strftime('%Y-%m-%d')
             gap_trade = gp.CspGap(self.RIC, get_data='n', expiry=gap_date, shares=shares_to_hedge, gap=5, prot=20,
-                                  exclude_div='y')
+                                  exclude_div=self.exclude)
             gap_trade.calc_trade()
             self.gap = gap_trade
 
