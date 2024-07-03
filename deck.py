@@ -114,7 +114,7 @@ class CspDeck:
 
     def _generate_csp_report(self):
         client_name = self.csp_client.client_name
-        pdf_path = f"decks/{client_name}_csp_report.pdf"
+        pdf_path = f"decks/{client_name}_csp_report_{self.csp_client.sym}.pdf"
         c = canvas.Canvas(pdf_path, pagesize=(13.333 * inch, 7.5 * inch))
         return c
 
@@ -695,7 +695,7 @@ class CspDeck:
 
         # Add images
         nvda_image_path = Path(f"assets/images/{ticker}_collar_payoff.png")  # Update with the actual path
-        spy_image_path = Path("assets/images/SPY_synthetic_payoff_NVDA.png")  # Update with the actual path
+        spy_image_path = Path(f"assets/images/SPY_synthetic_payoff_{ticker}.png")  # Update with the actual path
         nvda_image_width = 5.25 * inch
         nvda_image_height = 2.25 * inch
         nvda_image_x = 0.333 * inch
