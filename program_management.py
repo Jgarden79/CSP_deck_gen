@@ -29,7 +29,7 @@ def generate_decks(requests_path:str):
             a.create_csp_report_ex_sef()
         else:
             a.create_csp_report()
-        return
+    return
 
 def create_master_upload():
     files = [pd.read_csv(f'trading_files/{i}') for i in os.listdir('trading_files')]

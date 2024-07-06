@@ -3,6 +3,7 @@ import options_dat as od
 import deck as deck
 import pandas as pd
 import account as act
+from program_management import generate_decks
 
 # print(pd.read_pickle("assets/COST_cached_chain.pkl"))
 
@@ -18,8 +19,9 @@ import account as act
 # a.create_csp_report_ex_sef()
 # a.create_csp_report()
 
-# reqs = pd.read_csv('upload_template.csv')
-#
+
+reqs = 'upload_template.csv'
+
 # for i in range(0, len(reqs)):
 #     rq = reqs.iloc[i]
 #     name  = rq['name']
@@ -40,8 +42,10 @@ import account as act
 #     else:
 #         a.create_csp_report()
 
-j = CspAccount(account_number="X123456789", client_name="Ballstien, Maurry", RIC="AMD.O", shares=11000, green_light='n',
-               cost_basis=5000, gap_shares=5000, sef_shares=3000, cov_call_shares=3000, gap='y', sef='y', cov_call='y',
-               exclude_div='n', custodian="FIDELITY")
-j._generate_covered_calls()
-print(j.cov_call.__dict__)
+# j = act.CspAccount(account_number="Z40396262", client_name="Stec/Chomicz", RIC="INTU.O", shares=10300, green_light='y',
+#                cost_basis=500, gap_shares=3600, sef_shares=3600, cov_call_shares=3100, gap='y', sef='y', cov_call='y',
+#                exclude_div='n', custodian="FIDELITY")
+#
+# j.execute_trades()
+
+generate_decks(reqs)

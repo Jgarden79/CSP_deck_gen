@@ -654,7 +654,7 @@ class CspDeck:
         ticker = self.csp_client.sym.upper()
 
         # Title
-        title = "NVDA Analysis (Hypothetical)"
+        title = f"{ticker} Analysis (Hypothetical)"
         title_style.fontSize = 24  # Adjust font size for this title
         title_style.leading = 28  # Adjust leading for this title
         title_paragraph = Paragraph(title, title_style)
