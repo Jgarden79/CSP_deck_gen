@@ -3,7 +3,12 @@ import options_dat as od
 import deck as deck
 import pandas as pd
 import account as act
-from program_management import generate_decks
+from program_management import *
+import refinitiv.data as rd
+import refinitiv.data.session as sess
+import refinitiv.data.content.symbol_conversion as sc
+import os
+
 
 # print(pd.read_pickle("assets/COST_cached_chain.pkl"))
 
@@ -48,4 +53,10 @@ reqs = 'upload_template.csv'
 #
 # j.execute_trades()
 
-generate_decks(reqs)
+# run_pretrade()
+
+j = load_from_pickle("636869414")
+j.validate_trades()
+# print(j.__dict__)
+
+
