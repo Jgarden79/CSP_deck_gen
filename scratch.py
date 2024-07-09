@@ -55,8 +55,9 @@ reqs = 'upload_template.csv'
 
 # run_pretrade()
 
-j = load_from_pickle("636869414")
-j.validate_trades()
+# j = load_from_pickle("636869414")
+# j.validate_trades()
 # print(j.__dict__)
 
+generate_decks(reqs)
 

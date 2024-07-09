@@ -9,9 +9,7 @@ import configparser as cp
 cfg=cp.ConfigParser()
 ek.set_app_key(os.getenv('eikon'))
 
-import chart_studio
 import pickle
-chart_studio.tools.set_credentials_file(username='JGarden79', api_key='eWGoAmjzRp3GIVRTFfSR')
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=FutureWarning)

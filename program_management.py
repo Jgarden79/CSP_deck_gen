@@ -57,6 +57,7 @@ def generate_decks(requests_path: str):
             a.create_csp_report_ex_sef()
         else:
             a.create_csp_report()
+        print(f"Deck for {name} complete")
     return
 
 
