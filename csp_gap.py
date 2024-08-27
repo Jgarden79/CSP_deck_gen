@@ -14,7 +14,7 @@ import seaborn as sns
 from matplotlib import colors
 
 today = dt.date.today()
-eik_api = os.getenv('eikon')
+eik_api = os.getenv('EIKON_API.KEY')
 ek.set_app_key(eik_api)
 
 loc_path = Path(__file__).parent
@@ -81,7 +81,7 @@ class CspGap:
         self.ann_div_yld = self.div_yld / 100
 
         # options chain set up
-        chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))  # read in the options chaing to pandas
+        chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.RIC))  # read in the options chaing to pandas
         chain['MID'] = (chain['CF_BID'] + chain["CF_ASK"]) / 2
         trade_chain = chain[chain['EXPIR_DATE'] == self.expiry]  # isolate the chain we want
         sorted_trade_chain = trade_chain.sort_values(['PUTCALLIND', 'STRIKE_PRC'],
@@ -311,7 +311,7 @@ class CspGap:
         :param period: <str> The lookback period of daily prices ('1y', '3y', '5y', '10y')
 
         '''
-        if self.sym == 'BRK.B':
+        if self.sym == 'BRKB':
             self.sym = 'BRK-B'
         else:
             pass
@@ -341,6 +341,7 @@ class CspGap:
         plt.yticks(fontsize=14)
         plt.gca().yaxis.set_major_formatter('${x:,.0f}')
         plt.xlabel('Date',fontsize=16,fontweight='bold')
+        # if self.sym == 'BRK.B':
         plt.ylabel(f'{self.sym} Price',fontsize=16,fontweight='bold')
         plt.tight_layout()
         plt.savefig(img_path / '{}_{}r_price_chart_CapCush.png'.format(self.sym,period))

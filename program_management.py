@@ -6,9 +6,9 @@ import datetime as dt
 import shutil
 from pathlib import Path
 import re
-import refinitiv.data as rd
-import refinitiv.data.session as sess
-import refinitiv.data.content.symbol_conversion as sc
+import lseg.data as rd
+import lseg.data.session as sess
+import lseg.data.content.symbol_conversion as sc
 import account as act
 import os
 import pickle
@@ -41,7 +41,8 @@ def generate_decks(requests_path: str):
     for i in range(0, len(reqs)):
         rq = reqs.iloc[i]
         name = rq['name']
-        ric = rq['ric']
+        ticker = rq['ric']
+        ric = tick_to_ric(ticker.upper())
         shares = rq['shares']
         cb = rq['cbps']
         k = csp.CspClient(client_name=name, RIC=ric, shares=shares, green_light='n', cost_basis_per_share=cb)

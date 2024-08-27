@@ -13,7 +13,7 @@ import options_dat as od
 import seaborn as sns
 
 today = dt.date.today()
-eik_api = os.getenv('eikon')
+eik_api = os.getenv('EIKON_API.KEY')
 ek.set_app_key(eik_api)
 
 loc_path = Path(__file__).parent
@@ -54,7 +54,7 @@ class Sef:
         if age >=2: # change back to 2 after dev
             od.get_options([f'{self.RIC}'])
         self.sym = pd.read_pickle('assets/{}_sym.pkl'.format(self.RIC)).iloc[0]['ticker']  # import the symbol
-        chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))  # read in the options chaing to pandas
+        chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.RIC))  # read in the options chaing to pandas
         chain['MID'] = (chain['CF_BID'] + chain["CF_ASK"]) / 2
         trade_chain = chain[chain['EXPIR_DATE'] == self.expiration]  # isolate the chain we want
         sorted_trade_chain = trade_chain.sort_values(['PUTCALLIND', 'STRIKE_PRC'],

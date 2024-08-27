@@ -7,7 +7,7 @@ import os
 
 import configparser as cp
 cfg=cp.ConfigParser()
-ek.set_app_key(os.getenv('eikon'))
+ek.set_app_key(os.getenv('EIKON_API.KEY'))
 
 import pickle
 import warnings
@@ -39,11 +39,13 @@ def get_options(RICLST = list):
         und = und.fillna(0)
         und.to_pickle('assets/{}_cached_und.pkl'.format(sym)) # save unerlying data to pkl
         sym_2 = RIC.split('.')[0] # save ric
-        sym_2 = sym_2.upper() # make sure its in upper cas
+        sym_2 = sym_2 # make sure its in upper cas
+        if sym_2 == "BRKb":
+            sym_2 = "BRKB"
         Request = '0#'+sym_2+'*.U' # set up request for options chain
         fields = ['PUTCALLIND', 'EXPIR_DATE', 'STRIKE_PRC', 'CF_BID', 'CF_ASK', 'IMP_VOLT', 'DELTA'] # list of fields
         chain = ek.get_data(Request, fields = fields)[0] # get the option data
-        chain.to_pickle('assets/{}_cached_chain.pkl'.format(sym)) # store options chains in pkl
+        chain.to_pickle('assets/{}_cached_chain.pkl'.format(RIC)) # store options chains in pkl
     return
 
 def get_spx_options():

@@ -35,15 +35,16 @@ discs = Path("assets/brand_assets/disc.png")
 
 
 try:
-    pdfmetrics.registerFont(TTFont('Noe', '/Users/jgarden/NoeDisplay-Bold.ttf'))  # change to jeffreygarden for mac
-except:
+    pdfmetrics.registerFont(TTFont('Noe', '/Users/jgarden/Noe Display Bold.ttf'))  # change to jeffreygarden for mac
+except Exception as e:
+    print(e)
     pdfmetrics.registerFont(TTFont('Noe', '/Users/jeffreygarden/NoeDisplay-Bold.ttf'))
 
 try:
     pdfmetrics.registerFont(
         TTFont('sans_l', '/Users/jgarden/UntitledSans-Light.ttf'))  # change to jeffreygarden for mac
 except:
-    pdfmetrics.registerFont(TTFont('sans_l', '/Users/jeffreygarden/UntitledSans-Light.ttf'))  #
+    pdfmetrics.registerFont(TTFont('sans_l', '/Users/jeffreygarden/Untitled Sans Light.ttf'))  #
 
 try:
     pdfmetrics.registerFont(

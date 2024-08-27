@@ -12,7 +12,7 @@ import cov_call as ccl
 import options_dat as od
 
 today = dt.date.today()
-eik_api = os.getenv('eikon')
+eik_api = os.getenv('EIKON_API.KEY')
 ek.set_app_key(eik_api)
 
 loc_path = Path(__file__).parent
@@ -63,7 +63,7 @@ class CspClient:
             if age > 2:
                 chain = od.get_options([self.RIC])
             else:
-                chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))
+                chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.RIC))
             dates = list(chain['EXPIR_DATE'].dropna().unique())
             dates = pd.to_datetime(dates)
             dates_series = pd.to_datetime(dates)
@@ -86,7 +86,7 @@ class CspClient:
             if age > 2:
                 chain = od.get_options([self.RIC])
             else:
-                chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))
+                chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.RIC))
             dates = list(chain['EXPIR_DATE'].dropna().unique())
             dates = pd.to_datetime(dates)
             dates_series = pd.to_datetime(dates)
@@ -110,7 +110,7 @@ class CspClient:
             if age > 2:
                 chain = od.get_options([self.RIC])
             else:
-                chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.sym))
+                chain = pd.read_pickle('assets/{}_cached_chain.pkl'.format(self.RIC))
             dates = list(chain['EXPIR_DATE'].dropna().unique())
             dates = pd.to_datetime(dates)
             dates_series = pd.to_datetime(dates)
