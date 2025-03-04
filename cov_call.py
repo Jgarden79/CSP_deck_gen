@@ -313,4 +313,3 @@ class CoverdCalls:
         self._cov_call_plots()
         self._strat_exit()
         self._historical_chart()
-
