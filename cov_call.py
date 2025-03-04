@@ -279,10 +279,15 @@ class CoverdCalls:
         adj_time_left = time_left / dt.timedelta(days=1)  # convert to flt
         dte = adj_time_left
         # Underlier Chart
-        df = yf.download('{}'.format(self.sym), period=period, progress=False)['Close'].to_frame()
+        api_key = os.getenv("ALPHAVANTAGE_API_KEY")
+        url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={self.sym}&apikey={api_key}&datatype=csv&outputsize=full'
+        df = pd.read_csv(url)
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df = df.set_index('timestamp')
+        df = df.iloc[0:504]
         plt.style.use('fivethirtyeight')
         plt.figure(figsize=(14, 8), linewidth=5, edgecolor='black')
-        plt.plot(df['Close'], label=self.sym)
+        plt.plot(df['adjusted_close'], label=self.sym)
         plt.tick_params(labeltop=False, labelright=True)
         plt.hlines(y=self.S_CALL['STRIKE_PRC'], xmin=df.index[0], xmax=df.index[-1],
                    linestyle='dashed', color='red', alpha=0.5,

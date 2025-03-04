@@ -315,10 +315,16 @@ class CspGap:
             self.sym = 'BRK-B'
         else:
             pass
-        df=yf.download('{}'.format(self.sym),period=period,)['Close'].to_frame()
+        # df=yf.download('{}'.format(self.sym),period=period,)['Close'].to_frame()
+        api_key = os.getenv("ALPHAVANTAGE_API_KEY")
+        url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={self.sym}&apikey={api_key}&datatype=csv&outputsize=full'
+        df = pd.read_csv(url)
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df = df.set_index('timestamp')
+        df = df.iloc[0:504]
         plt.style.use('fivethirtyeight')
         plt.figure(figsize=(14,8))
-        plt.plot(df['Close'],label=self.sym)
+        plt.plot(df['adjusted_close'],label=self.sym)
         plt.tick_params(labeltop=False,labelright=True)
 
         plt.hlines(y=self.SCALL['STRIKE_PRC'],xmin=df.index[0],xmax=df.index[-1],
